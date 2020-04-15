@@ -23,7 +23,7 @@ def index(request):
         raise Http404("Log does not exist")
 
     context = {'logs': logs}
-    return render(request, 'console/index2.html', context)
+    return render(request, 'console/logs.html', context)
 
 
 def new_requests(request):
@@ -32,7 +32,7 @@ def new_requests(request):
     except Log.DoesNotExist:
         raise Http404("Active logs don't exist")
     context = {'logs': logs}
-    return render(request, 'console/index2.html', context)
+    return render(request, 'console/logs-new.html', context)
 
 
 def processing_requests(request):
@@ -41,7 +41,7 @@ def processing_requests(request):
     except Log.DoesNotExist:
         raise Http404("Active logs don't exist")
     context = {'logs': logs}
-    return render(request, 'console/index.html', context)
+    return render(request, 'console/logs-processing.html', context)
 
 
 def resolved_requests(request):
@@ -50,9 +50,9 @@ def resolved_requests(request):
     except Log.DoesNotExist:
         raise Http404("Active logs don't exist")
     context = {'logs': logs}
-    return render(request, 'console/index.html', context)
+    return render(request, 'console/logs-resolved.html', context)
 
 
-def request_detail(request, log_id):
-    log = get_object_or_404(Log, pk = log_id)
+def request_detail(request, pk):
+    log = get_object_or_404(Log, pk = pk)
     return render(request, 'console/detail.html', {'log': log})
