@@ -1,0 +1,9 @@
+{% if logs %}
+    <ul>
+    {% for log in logs %}
+        <li><a href="/console/{{ log.id }}/">{{ log.timestamp }} {{ log.emergency_type }} {{ log.core_id }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No logs are available.</p>
+{% endif %}

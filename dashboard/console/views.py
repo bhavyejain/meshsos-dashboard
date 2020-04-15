@@ -1,3 +1,58 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from .models import Log
+from django.http import Http404
+from django.core.exceptions import ObjectDoesNotExist
+import requests
 
-# Create your views here.
+def index(request):
+    response = requests.get('http://8199bb70.ngrok.io/rlogs/')
+    if response.status_code == 200:
+        incoming_logs = response.json()
+        for log in incoming_logs:
+            _timestamp = log['timestamp']
+            _core_id = log['core_id']
+            try:
+                Log.objects.get(timestamp = _timestamp, core_id = _core_id)
+            except ObjectDoesNotExist:
+                l = Log(timestamp = _timestamp, emergency_type = log['emergency_type'], core_id = _core_id, latitude = log['latitude'], longitude = log['longitude'], accuracy = log['accuracy'], status = log['status'])
+                l.add_log()
+
+    try:
+        logs = Log.objects.all()
+    except Log.DoesNotExist:
+        raise Http404("Log does not exist")
+
+    context = {'logs': logs}
+    return render(request, 'console/index2.html', context)
+
+
+def new_requests(request):
+    try:
+        logs = Log.objects.filter(status='a')
+    except Log.DoesNotExist:
+        raise Http404("Active logs don't exist")
+    context = {'logs': logs}
+    return render(request, 'console/index2.html', context)
+
+
+def processing_requests(request):
+    try:
+        logs = Log.objects.filter(status='w')
+    except Log.DoesNotExist:
+        raise Http404("Active logs don't exist")
+    context = {'logs': logs}
+    return render(request, 'console/index.html', context)
+
+
+def resolved_requests(request):
+    try:
+        logs = Log.objects.filter(status='r')
+    except Log.DoesNotExist:
+        raise Http404("Active logs don't exist")
+    context = {'logs': logs}
+    return render(request, 'console/index.html', context)
+
+
+def request_detail(request, log_id):
+    log = get_object_or_404(Log, pk = log_id)
+    return render(request, 'console/detail.html', {'log': log})

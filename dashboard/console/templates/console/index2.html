@@ -1,0 +1,33 @@
+<style>
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+th, td {
+  padding: 5px;
+}
+th {
+  text-align: left;
+}
+</style>
+
+{% if logs %}
+    <table style="width:100%">
+        <tr>
+            <th>ID</th>
+            <th>Timestamp</th>
+            <th>Emergency Type</th>
+            <th>Core ID</th>
+        </tr>
+    {% for log in logs %}
+        <tr>
+            <td><a href="/console/{{ log.id }}/">{{ log.id }}</a></td>
+            <td>{{ log.timestamp }}</td>
+            <td>{{ log.emergency_type }}</td>
+            <td>{{ log.core_id }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+{% else %}
+    <p>No logs are available.</p>
+{% endif %}
