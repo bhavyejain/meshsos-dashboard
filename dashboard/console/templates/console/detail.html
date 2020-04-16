@@ -25,6 +25,9 @@
   <link href="{% static 'css/style.css' %}" rel="stylesheet">
   <link href="{% static 'css/style-responsive.css' %}" rel="stylesheet" />
 
+  <script src='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css' rel='stylesheet' />
+
   <!-- HTML5 shim and Respond.js IE8 support of HTML5 -->
   <!--[if lt IE 9]>
       <script src="{% static 'js/html5shiv.js' %}"></script>
@@ -107,7 +110,9 @@
           </div>
         </div>
         <!-- page start-->
-
+        <div class = "row">
+          <a href="https://www.google.com/maps/dir/?api=1&origin=Clock+Tower+Dehradun&destination={{ log.latitude }},{{ log.longitude }}" rel="noopener" target="_blank">Map!</a>
+        </div>
         <div class = "row">
           <div class="col-sm-4">
             <section class="panel">
@@ -171,6 +176,14 @@
                 </tbody>
               </table>
             </section>
+          </div>
+          <div class="col-sm-8">
+            <iframe width="800"
+                    height="600"
+                    frameborder="5"
+                    style="border:0"
+                    src="https://www.google.com/maps/embed/v1/directions?key={{ api_key }}&zoom=13&origin=Clock+Tower+Dehradun&destination={{ log.latitude }},{{ log.longitude }}&mode=driving"
+                    allowfullscreen></iframe>
           </div>
         </div>
         <!-- page end-->

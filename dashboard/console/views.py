@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from .models import Log
 from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
-import requests
+import requests, googlemaps
 
 def index(request):
     response = requests.get('http://8199bb70.ngrok.io/rlogs/')
@@ -55,4 +55,18 @@ def resolved_requests(request):
 
 def request_detail(request, pk):
     log = get_object_or_404(Log, pk = pk)
-    return render(request, 'console/detail.html', {'log': log})
+    return render(request, 'console/detail.html', {
+        'log': log,
+        'source': '10, Ballupur Road, Dehradun, Uttarakhand, India',
+        'api_key': 'AIzaSyARRcMNgSrGPV5mOURKpwvjIJ3uygQs8vs'
+    })
+
+
+'''
+get location from address:
+
+gmaps = googlemaps.Client(key='')
+geocode_result = gmaps.geocode(<address>)
+origin_lat = geocode_result[0]['geometry']['location']['lat']
+origin_lon = lat = geocode_result[0]['geometry']['location']['lng']
+'''
