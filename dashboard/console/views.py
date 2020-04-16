@@ -1,6 +1,8 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
-from .models import Log
+from .models import Log, Profile
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
@@ -79,6 +81,11 @@ def update_status(request, pk, status):
     elif status == "r":
         return HttpResponseRedirect(reverse('console:resolved-logs'))
 
+
+@login_required
+def profile(request):
+    current_user = request.user
+    return render(request, 'console/profile.html', {})
 
 '''
 get location from address:
