@@ -164,11 +164,11 @@
                     <td>
                       <div class="btn-group">
                         {% if log.status == "a" %}
-                        <a class="btn btn-primary" href="#"><i class="icon_plus_alt2"></i> accept</a>
+                        <a class="btn btn-primary" href="/console/update_status/{{log.pk}}/w/"><i class="icon_plus_alt2"></i> accept</a>
                         {% elif log.status == "w" %}
-                        <a class="btn btn-success" href="#"><i class="icon_check_alt2"></i> resolve</a>
+                        <a class="btn btn-success" href="/console/update_status/{{log.pk}}/r/"><i class="icon_check_alt2"></i> resolve</a>
                         {% else %}
-                        <a class="btn btn-danger" href="#"><i class="icon_close_alt2"></i> delete</a>
+                        <a class="btn btn-danger" href="/console/update_status/{{log.pk}}/d/"><i class="icon_close_alt2"></i> delete</a>
                         {% endif %}
                       </div>
                     </td>

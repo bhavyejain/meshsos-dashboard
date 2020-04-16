@@ -125,7 +125,7 @@
 
                   {% for log in logs %}
                   <tr>
-                      <td><a href="/console/detail/{{ log.id }}/">{{ log.id }}</a></td>
+                      <td><a href="/console/detail/{{ log.pk }}/">{{ log.id }}</a></td>
                       <td>{{ log.timestamp }}</td>
                       <td>{{ log.emergency_type }}</td>
                       <td>{{ log.core_id }}</td>

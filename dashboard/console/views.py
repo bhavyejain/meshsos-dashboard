@@ -1,8 +1,11 @@
 from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponseRedirect
 from .models import Log
 from django.http import Http404
+from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
-import requests, googlemaps
+import requests
+import googlemaps
 
 def index(request):
     response = requests.get('http://8199bb70.ngrok.io/rlogs/')
@@ -15,7 +18,7 @@ def index(request):
                 Log.objects.get(timestamp = _timestamp, core_id = _core_id)
             except ObjectDoesNotExist:
                 l = Log(timestamp = _timestamp, emergency_type = log['emergency_type'], core_id = _core_id, latitude = log['latitude'], longitude = log['longitude'], accuracy = log['accuracy'], status = log['status'])
-                l.add_log()
+                l.save_log()
 
     try:
         logs = Log.objects.all()
@@ -60,6 +63,21 @@ def request_detail(request, pk):
         'source': '10, Ballupur Road, Dehradun, Uttarakhand, India',
         'api_key': 'AIzaSyARRcMNgSrGPV5mOURKpwvjIJ3uygQs8vs'
     })
+
+
+def update_status(request, pk, status):
+    log = get_object_or_404(Log, pk=pk)
+
+    if status == "d":
+        log.delete()
+        return HttpResponseRedirect(reverse('console:index'))
+
+    log.status = status
+    log.save_log()
+    if status == "w":
+        return HttpResponseRedirect(reverse('console:processing-logs'))
+    elif status == "r":
+        return HttpResponseRedirect(reverse('console:resolved-logs'))
 
 
 '''

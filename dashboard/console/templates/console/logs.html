@@ -126,7 +126,7 @@
 
                   {% for log in logs %}
                   <tr>
-                      <td><a href="/console/detail/{{ log.id }}/">{{ log.id }}</a></td>
+                      <td><a href="/console/detail/{{ log.pk }}/">{{ log.id }}</a></td>
                       <td>{{ log.timestamp }}</td>
                       <td>{{ log.emergency_type }}</td>
                       <td>{{ log.core_id }}</td>
@@ -142,9 +142,9 @@
                     <td>
                       <div class="btn-group">
                         {% if log.status == "a" %}
-                        <a class="btn btn-primary" href="#"><i class="icon_plus_alt2"></i></a>
+                        <a class="btn btn-primary" href="/console/update_status/{{log.pk}}/w/"><i class="icon_plus_alt2"></i></a>
                         {% elif log.status == "w" %}
-                        <a class="btn btn-success" href="#"><i class="icon_check_alt2"></i></a>
+                        <a class="btn btn-success" href="/console/update_status/{{log.pk}}/r/"><i class="icon_check_alt2"></i></a>
                         {% endif %}
                       </div>
                     </td>

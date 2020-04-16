@@ -53,6 +53,30 @@
       <!--logo start-->
       <a href="{% url 'console:index' %}" class="logo">Mesh <span class="lite">SOS</span></a>
       <!--logo end-->
+
+      <div class="top-nav notification-row">
+        <!-- notificatoin dropdown start-->
+        <ul class="nav pull-right top-menu">
+          <!-- user login dropdown start-->
+          <li class="dropdown">
+            <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                            <span class="username">Options</span>
+                            <b class="caret"></b>
+                        </a>
+            <ul class="dropdown-menu extended logout">
+              <div class="log-arrow-up"></div>
+              <li class="eborder-top">
+                <a href="#"><i class="icon_profile"></i> My Profile</a>
+              </li>
+              <li>
+                <a href="#"><i class="icon_key_alt"></i> Log Out</a>
+              </li>
+            </ul>
+          </li>
+          <!-- user login dropdown end -->
+        </ul>
+        <!-- notificatoin dropdown end-->
+      </div>
     </header>
     <!--header end-->
 
@@ -126,14 +150,14 @@
 
                   {% for log in logs %}
                   <tr>
-                      <td><a href="/console/detail/{{ log.id }}/">{{ log.id }}</a></td>
+                      <td><a href="/console/detail/{{ log.pk }}/">{{ log.id }}</a></td>
                       <td>{{ log.timestamp }}</td>
                       <td>{{ log.emergency_type }}</td>
                       <td>{{ log.core_id }}</td>
                       <td><span class="label label-danger">New</span></td>
                     <td>
                       <div class="btn-group">
-                        <a class="btn btn-primary" href="#"><i class="icon_plus_alt2"></i></a>
+                        <a class="btn btn-primary" href="/console/update_status/{{log.pk}}/w/"><i class="icon_plus_alt2"></i></a>
                       </div>
                     </td>
                   </tr>

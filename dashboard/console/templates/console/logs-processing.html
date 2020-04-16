@@ -126,14 +126,14 @@
 
                   {% for log in logs %}
                   <tr>
-                      <td><a href="/console/detail/{{ log.id }}/">{{ log.id }}</a></td>
+                      <td><a href="/console/detail/{{ log.pk }}/">{{ log.id }}</a></td>
                       <td>{{ log.timestamp }}</td>
                       <td>{{ log.emergency_type }}</td>
                       <td>{{ log.core_id }}</td>
                       <td><span class="label label-primary">Processing</span></td>
                     <td>
                       <div class="btn-group">
-                        <a class="btn btn-success" href="#"><i class="icon_check_alt2"></i></a>
+                        <a class="btn btn-success" href="/console/update_status/{{log.pk}}/r/"><i class="icon_check_alt2"></i></a>
                       </div>
                     </td>
                   </tr>
