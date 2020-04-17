@@ -40,6 +40,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     location = models.TextField(max_length=500, blank=True)         # user.profile.location
     service = models.CharField(max_length=8, blank=True)            # user.profile.service
+    phone = models.CharField(max_length=13, blank=True)             # user.profile.phone
 
 
 @receiver(post_save, sender=User)
