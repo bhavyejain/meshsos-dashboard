@@ -14,12 +14,14 @@ def index(request):
     if response.status_code == 200:
         incoming_logs = response.json()
         for log in incoming_logs:
+            _server_db_id = log['id']
             _timestamp = log['timestamp']
             _core_id = log['core_id']
             try:
-                Log.objects.get(timestamp = _timestamp, core_id = _core_id)
+                # Log.objects.get(timestamp = _timestamp, core_id = _core_id)
+                Log.objects.get(server_db_id = _server_db_id)
             except ObjectDoesNotExist:
-                l = Log(timestamp = _timestamp, emergency_type = log['emergency_type'], core_id = _core_id, latitude = log['latitude'], longitude = log['longitude'], accuracy = log['accuracy'], status = log['status'])
+                l = Log(server_db_id = _server_db_id, timestamp = _timestamp, emergency_type = log['emergency_type'], core_id = _core_id, latitude = log['latitude'], longitude = log['longitude'], accuracy = log['accuracy'], status = log['status'])
                 l.save_log()
 
     try:

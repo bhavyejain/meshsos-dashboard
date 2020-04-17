@@ -7,13 +7,16 @@ from django.dispatch import receiver
 
 
 class Log(models.Model):
+    # server_db_id : id of log in server db
+    server_db_id = models.IntegerField()
+
     # string of format "%Y-%m-%d %H:%M:%S" eg. "2020-04-01 20:01:14", FORMAT = UTC
     timestamp = models.CharField(max_length=19, default='-')
 
     # emergency_ype contains string one of 'medical' & 'police'
     emergency_type = models.CharField(max_length=7, default='-')
 
-    # core_id: if of sending device
+    # core_id: id of sending device
     core_id = models.CharField(max_length=30, default='-')
 
     # latitude and longitude
