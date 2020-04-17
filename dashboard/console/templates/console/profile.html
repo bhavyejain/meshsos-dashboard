@@ -14,12 +14,13 @@
           <div class="col-lg-12">
             <div class="profile-widget profile-widget-info">
               <div class="panel-body">
-                <div class="col-lg-2 col-sm-2">
-                  <h4>Jenifer Smith</h4>
-                  <h6>Administrator</h6>
-                </div>
-                <div class="col-lg-4 col-sm-4 follow-info">
-                  <p>Hello I’m Jenifer Smith, a leading expert in interactive and creative design.</p>
+                <div class="col-lg-12 col-sm-12">
+                  {% if user.first_name == '' %}
+                    <h4>{{user.username}}</h4>
+                  {% else %}
+                    <h4>{{user.first_name}}</h4>
+                  {% endif %}
+                  <h5>Administrator</h5>
                 </div>
               </div>
             </div>
@@ -54,19 +55,22 @@
                         <h1>Bio Graph</h1>
                         <div class="row">
                           <div class="bio-row">
-                            <p><span>Name </span>: {{user.username}} </p>
+                            <p><span>Name </span>: {{user.first_name}} </p>
                           </div>
                           <div class="bio-row">
-                            <p><span>Serive</span>: Medical</p>
+                            <p><span>Userame </span>: {{user.username}} </p>
                           </div>
                           <div class="bio-row">
-                            <p><span>Location </span>: United</p>
+                            <p><span>Service</span>: {{user.profile.service}} </p>
                           </div>
                           <div class="bio-row">
-                            <p><span>Email </span>:jenifer@mailname.com</p>
+                            <p><span>Location </span>: {{user.profile.location}} </p>
                           </div>
                           <div class="bio-row">
-                            <p><span>Phone </span>: (+021) 956 789123</p>
+                            <p><span>Email </span>: {{user.email}} </p>
+                          </div>
+                          <div class="bio-row">
+                            <p><span>Phone </span>: {{user.profile.phone}} </p>
                           </div>
                         </div>
                       </div>
@@ -81,42 +85,43 @@
                     <section class="panel">
                       <div class="panel-body bio-graph-info">
                         <h1> Profile Info</h1>
-                        <form class="form-horizontal" role="form">
+                        <form method="post" class="form-horizontal" role="form">
+                          {% csrf_token %}
                           <div class="form-group">
                             <label class="col-lg-2 control-label">Name</label>
                             <div class="col-lg-6">
-                              <input type="text" class="form-control" id="name" placeholder=" ">
+                              {{user_form.first_name}}
                             </div>
                           </div>
                           <div class="form-group">
                             <label class="col-lg-2 control-label">Service</label>
                             <div class="col-lg-6">
-                              <input type="text" class="form-control" id="service" placeholder=" ">
+                              {{profile_form.service}}
                             </div>
                           </div>
                           <div class="form-group">
                             <label class="col-lg-2 control-label">Location</label>
                             <div class="col-lg-6">
-                              <input type="text" class="form-control" id="location" placeholder=" ">
+                              {{profile_form.location}}
                             </div>
                           </div>
                           <div class="form-group">
                             <label class="col-lg-2 control-label">Email</label>
                             <div class="col-lg-6">
-                              <input type="text" class="form-control" id="email" placeholder=" ">
+                              {{user_form.email}}
                             </div>
                           </div>
                           <div class="form-group">
                             <label class="col-lg-2 control-label">Phone</label>
                             <div class="col-lg-6">
-                              <input type="text" class="form-control" id="phone" placeholder=" ">
+                              {{profile_form.phone}}
                             </div>
                           </div>
 
                           <div class="form-group">
                             <div class="col-lg-offset-2 col-lg-10">
                               <button type="submit" class="btn btn-primary">Save</button>
-                              <button type="button" class="btn btn-danger">Cancel</button>
+                              <a class="btn btn-danger" href="{% url 'console:profile' %}">Cancel</a>
                             </div>
                           </div>
                         </form>
