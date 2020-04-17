@@ -68,15 +68,18 @@ def resolved_requests(request):
 
 
 def request_detail(request, pk):
-    log = get_object_or_404(Log, pk = pk)
-    address = request.user.profile.location.strip()
-    tokens = address.split(' ')
-    source = '+'.join(tokens)
-    return render(request, 'console/detail.html', {
-        'log': log,
-        'source': source,
-        'api_key': 'AIzaSyARRcMNgSrGPV5mOURKpwvjIJ3uygQs8vs'
-    })
+    try:
+        log = Log.objects.get(pk = pk)
+        address = request.user.profile.location.strip()
+        tokens = address.split(' ')
+        source = '+'.join(tokens)
+        return render(request, 'console/detail.html', {
+            'log': log,
+            'source': source,
+            'api_key': 'AIzaSyARRcMNgSrGPV5mOURKpwvjIJ3uygQs8vs'
+        })
+    except ObjectDoesNotExist:
+        return render(request, 'console/404.html', {})
 
 
 def update_status(request, pk, status):
