@@ -1,13 +1,14 @@
+from django.db import transaction
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
-from .models import Log, Profile
-from django.contrib.auth.models import User
+from .models import Log
+from .forms import UserForm, ProfileForm
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.http import Http404
 from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
 import requests
-import googlemaps
 
 def index(request):
     response = requests.get('http://8199bb70.ngrok.io/rlogs/')
@@ -25,11 +26,17 @@ def index(request):
                 l.save_log()
 
     try:
-        logs = Log.objects.all()
+        new_logs = Log.objects.filter(status="a")
+        processing_logs = Log.objects.filter(status="w")
+        resolved_logs = Log.objects.filter(status="r")
     except Log.DoesNotExist:
         raise Http404("Log does not exist")
 
-    context = {'logs': logs}
+    context = {
+        'n_logs': new_logs,
+        'p_logs': processing_logs,
+        'r_logs': resolved_logs
+    }
     return render(request, 'console/logs.html', context)
 
 
@@ -62,9 +69,12 @@ def resolved_requests(request):
 
 def request_detail(request, pk):
     log = get_object_or_404(Log, pk = pk)
+    address = request.user.profile.location.strip()
+    tokens = address.split(' ')
+    source = '+'.join(tokens)
     return render(request, 'console/detail.html', {
         'log': log,
-        'source': '10, Ballupur Road, Dehradun, Uttarakhand, India',
+        'source': source,
         'api_key': 'AIzaSyARRcMNgSrGPV5mOURKpwvjIJ3uygQs8vs'
     })
 
@@ -85,15 +95,22 @@ def update_status(request, pk, status):
 
 
 @login_required
+@transaction.atomic
 def profile(request):
-    current_user = request.user
-    return render(request, 'console/profile.html', {})
-
-'''
-get location from address:
-
-gmaps = googlemaps.Client(key='')
-geocode_result = gmaps.geocode(<address>)
-origin_lat = geocode_result[0]['geometry']['location']['lat']
-origin_lon = lat = geocode_result[0]['geometry']['location']['lng']
-'''
+    if request.method == 'POST':
+        user_form = UserForm(request.POST, instance=request.user)
+        profile_form = ProfileForm(request.POST, instance=request.user.profile)
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            messages.success(request, 'Your profile was successfully updated!')
+            return HttpResponseRedirect(reverse('console:profile'))
+        else:
+            messages.error(request, 'Please correct the error below.')
+    else:
+        user_form = UserForm(instance=request.user)
+        profile_form = ProfileForm(instance=request.user.profile)
+    return render(request, 'console/profile.html', {
+        'user_form': user_form,
+        'profile_form': profile_form
+    })
