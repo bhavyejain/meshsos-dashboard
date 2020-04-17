@@ -1,0 +1,93 @@
+{% extends 'console/base.html' %}
+
+{% block content %}
+    <!--main content start-->
+    <section id="main-content">
+      <section class="wrapper">
+        <div class="row">
+          <div class="col-lg-12">
+            <h3 class="page-header"><i class="icon_info_alt"></i> REQUEST DETAILS </h3>
+          </div>
+        </div>
+        <!-- page start-->
+        <div class = "row">
+          <div class="col-sm-4">
+            <section class="panel">
+              <header class="panel-heading">
+                Request Details
+              </header>
+              <table class="table table-striped">
+                <tbody>
+                  <tr>
+                    <td>Request ID</td>
+                    <td>{{ log.id }}</td>
+                  </tr>
+                  <tr>
+                    <td>Timestamp</td>
+                    <td>{{ log.timestamp }}</td>
+                  </tr>
+                  <tr>
+                    <td>Emergency</td>
+                    <td>{{ log.emergency_type }}</td>
+                  </tr>
+                  <tr>
+                    <td>Core ID</td>
+                    <td>{{ log.core_id }}</td>
+                  </tr>
+                  <tr>
+                    <td>Status</td>
+                    {% if log.status == "a" %}
+                    <td><span class="label label-danger">New</span></td>
+                    {% elif log.status == "w" %}
+                    <td><span class="label label-primary">Processing</span></td>
+                    {% else %}
+                    <td><span class="label label-success">Resolved</span></td>
+                    {% endif %}
+                  </tr>
+                  <tr>
+                    <td>Latitude</td>
+                    <td>{{ log.latitude }}</td>
+                  </tr>
+                  <tr>
+                    <td>Longitude</td>
+                    <td>{{ log.longitude }}</td>
+                  </tr>
+                  <tr>
+                    <td>Accuracy</td>
+                    <td>{{ log.accuracy }}</td>
+                  </tr>
+                  <tr>
+                    <td>Action</td>
+                    <td>
+                      <div class="btn-group">
+                        {% if log.status == "a" %}
+                        <a class="btn btn-primary" href="/console/update_status/{{log.pk}}/w/"><i class="icon_plus_alt2"></i> accept</a>
+                        {% elif log.status == "w" %}
+                        <a class="btn btn-success" href="/console/update_status/{{log.pk}}/r/"><i class="icon_check_alt2"></i> resolve</a>
+                        {% else %}
+                        <a class="btn btn-danger" href="/console/update_status/{{log.pk}}/d/"><i class="icon_close_alt2"></i> delete</a>
+                        {% endif %}
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+            <section>
+              <a class="btn btn-info" href="https://www.google.com/maps/dir/?api=1&origin={{ source }}&destination={{ log.latitude }},{{ log.longitude }}" title="Bootstrap 3 themes generator" rel="noopener" target="_blank"><span class="icon_map"></span> Open Map In New Tab</a>
+            </section>
+          </div>
+          <div class="col-sm-8">
+            <iframe width="800"
+                    height="600"
+                    frameborder="5"
+                    style="border:0"
+                    src="https://www.google.com/maps/embed/v1/directions?key={{ api_key }}&zoom=13&origin={{ source }}&destination={{ log.latitude }},{{ log.longitude }}&mode=driving"
+                    allowfullscreen></iframe>
+          </div>
+        </div>
+        <!-- page end-->
+      </section>
+    </section>
+    <!--main content end-->
+{% endblock %}
