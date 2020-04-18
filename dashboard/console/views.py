@@ -1,6 +1,6 @@
 from django.db import transaction
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.http import HttpResponseRedirect, HttpResponse
 from .models import Log
 from .forms import UserForm, ProfileForm
 from django.contrib.auth.decorators import login_required
@@ -10,26 +10,34 @@ from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
 import requests
 import json
-
 from django.core import serializers
 
 
-def index_test(request):
-    try:
-        logs = Log.objects.filter(emergency_type='police')
-    except Log.DoesNotExist:
+def get_logs(request, status):
+    # status filter:
+    ## i : all logs
+    ## a : new logs
+    ## w : processing logs
+    ## r : resolved logs
+
+    if request.is_ajax():
+        try:
+            if status == 'i':
+                logs = Log.objects.all()
+            else:
+                logs = Log.objects.filter(status=status)
+        except Log.DoesNotExist:
+            raise Http404("Log does not exist")
+        logs_json = serializers.serialize('json', logs)
+        return HttpResponse(logs_json, content_type='application/json')
+    else:
         raise Http404("Log does not exist")
-    logs_json = serializers.serialize('json', logs)
-    context = {
-        'logs': logs,
-        'logs_json': logs_json
-    }
-    return render(request, 'console/logs_test.html', context)
+
 
 def sync_db(request):
     if request.method == 'POST':
         status = request.POST['status']
-        response = requests.get('http://8199bb70.ngrok.io/rlogs/')
+        response = requests.get('http://8199bb70.ngrok.io/rlogs/?status=a')     # get only the active records (only they will have new entries)
         if response.status_code == 200:
             incoming_logs = response.json()
             for log in incoming_logs:
@@ -48,21 +56,8 @@ def sync_db(request):
             return HttpResponse("No logs found!")
 
 
-def index(request):
-    response = requests.get('http://8199bb70.ngrok.io/rlogs/')
-    if response.status_code == 200:
-        incoming_logs = response.json()
-        for log in incoming_logs:
-            _server_db_id = log['id']
-            _timestamp = log['timestamp']
-            _core_id = log['core_id']
-            try:
-                # Log.objects.get(timestamp = _timestamp, core_id = _core_id)
-                Log.objects.get(server_db_id = _server_db_id)
-            except ObjectDoesNotExist:
-                l = Log(server_db_id = _server_db_id, timestamp = _timestamp, emergency_type = log['emergency_type'], core_id = _core_id, latitude = log['latitude'], longitude = log['longitude'], accuracy = log['accuracy'], status = log['status'])
-                l.save_log()
-
+@login_required
+def all_requests(request):
     try:
         new_logs = Log.objects.filter(status="a")
         processing_logs = Log.objects.filter(status="w")
@@ -75,9 +70,10 @@ def index(request):
         'p_logs': processing_logs,
         'r_logs': resolved_logs
     }
-    return render(request, 'console/logs.html', context)
+    return render(request, 'console/logs-all.html', context)
 
 
+@login_required
 def new_requests(request):
     try:
         logs = Log.objects.filter(status='a')
@@ -87,6 +83,7 @@ def new_requests(request):
     return render(request, 'console/logs-new.html', context)
 
 
+@login_required
 def processing_requests(request):
     try:
         logs = Log.objects.filter(status='w')
@@ -96,6 +93,7 @@ def processing_requests(request):
     return render(request, 'console/logs-processing.html', context)
 
 
+@login_required
 def resolved_requests(request):
     try:
         logs = Log.objects.filter(status='r')
@@ -103,6 +101,7 @@ def resolved_requests(request):
         raise Http404("Active logs don't exist")
     context = {'logs': logs}
     return render(request, 'console/logs-resolved.html', context)
+
 
 @login_required
 def request_detail(request, pk):
@@ -129,6 +128,10 @@ def update_status(request, pk, status):
 
     log.status = status
     log.save_log()
+
+    patch_url = "http://8199bb70.ngrok.io/rlogs/?status=" + str(status) + "&id=" + str(log.server_db_id)
+    response = requests.get(patch_url)
+
     if status == "w":
         return HttpResponseRedirect(reverse('console:processing-logs'))
     elif status == "r":
