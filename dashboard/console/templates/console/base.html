@@ -149,6 +149,32 @@
   </section>
   <!-- container section end -->
   <!-- javascripts -->
+
+  <script type="text/javascript">
+        // script to update database at regular intervals
+
+        var token = '{{csrf_token}}';
+
+        function trigger_data_call(){
+            $( document ).ready(function() {
+                $.ajax({
+                    headers: { "X-CSRFToken": token },
+                    type:'POST',
+                    url:'/console/sync_db/',
+                    data:{
+                        status:"a",
+                    },
+                    success:function(data){
+                        console.log(data);
+                    }
+                });
+            });
+        }
+
+        trigger_data_call();
+        setInterval(trigger_data_call, 3000);
+    </script>
+
   <script src="{% static 'js/jquery.js' %}"></script>
   <script src="{% static 'js/bootstrap.min.js' %}"></script>
   <!-- nice scroll -->
