@@ -57,50 +57,17 @@ def sync_db(request):
 
 
 @login_required
-def all_requests(request):
-    try:
-        new_logs = Log.objects.filter(status="a")
-        processing_logs = Log.objects.filter(status="w")
-        resolved_logs = Log.objects.filter(status="r")
-    except Log.DoesNotExist:
-        raise Http404("Log does not exist")
-
-    context = {
-        'n_logs': new_logs,
-        'p_logs': processing_logs,
-        'r_logs': resolved_logs
-    }
-    return render(request, 'console/logs-all.html', context)
-
-
-@login_required
-def new_requests(request):
-    try:
-        logs = Log.objects.filter(status='a')
-    except Log.DoesNotExist:
-        raise Http404("Active logs don't exist")
-    context = {'logs': logs}
-    return render(request, 'console/logs-new.html', context)
-
-
-@login_required
-def processing_requests(request):
-    try:
-        logs = Log.objects.filter(status='w')
-    except Log.DoesNotExist:
-        raise Http404("Active logs don't exist")
-    context = {'logs': logs}
-    return render(request, 'console/logs-processing.html', context)
-
-
-@login_required
-def resolved_requests(request):
-    try:
-        logs = Log.objects.filter(status='r')
-    except Log.DoesNotExist:
-        raise Http404("Active logs don't exist")
-    context = {'logs': logs}
-    return render(request, 'console/logs-resolved.html', context)
+def show_logs(request, status):
+    if status == "all":
+        return render(request, 'console/logs-all.html')
+    elif status == "new":
+        return render(request, 'console/logs-new.html')
+    elif status == "processing":
+        return render(request, 'console/logs-processing.html')
+    elif status == "resolved":
+        return render(request, 'console/logs-resolved.html')
+    else:
+        return render(request, 'console/404.html')
 
 
 @login_required
@@ -116,7 +83,7 @@ def request_detail(request, pk):
             'api_key': 'AIzaSyARRcMNgSrGPV5mOURKpwvjIJ3uygQs8vs'
         })
     except ObjectDoesNotExist:
-        return render(request, 'console/404.html', {})
+        return render(request, 'console/404.html')
 
 @login_required
 def update_status(request, pk, status):
@@ -124,7 +91,7 @@ def update_status(request, pk, status):
 
     if status == "d":
         log.delete()
-        return HttpResponseRedirect(reverse('console:index'))
+        return HttpResponseRedirect(reverse('console:show_logs', args=['all']))
 
     log.status = status
     log.save_log()
@@ -133,9 +100,9 @@ def update_status(request, pk, status):
     response = requests.get(patch_url)
 
     if status == "w":
-        return HttpResponseRedirect(reverse('console:processing-logs'))
+        return HttpResponseRedirect(reverse('console:show_logs', args=['processing']))
     elif status == "r":
-        return HttpResponseRedirect(reverse('console:resolved-logs'))
+        return HttpResponseRedirect(reverse('console:show_logs', args=['resolved']))
 
 
 @login_required

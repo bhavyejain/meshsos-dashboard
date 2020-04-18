@@ -20,7 +20,7 @@
   <!--external css-->
   <!-- font icon -->
   <link href="{% static 'css/elegant-icons-style.css' %}" rel="stylesheet" />
-  <link href="{% static 'assets/font-awesome/css/font-awesome.css' %}" rel="stylesheet" />
+  <link href="{% static 'css/font-awesome.css' %}" rel="stylesheet" />
   <!-- Custom styles -->
   <link href="{% static 'css/style.css' %}" rel="stylesheet">
   <link href="{% static 'css/style-responsive.css' %}" rel="stylesheet" />
@@ -44,7 +44,7 @@
     <p class="text-404">404</p>
 
     <h2>Aww Snap!</h2>
-    <p>Something went wrong or that page doesn’t exist. <br><a href="{% url 'console:index' %}">Return Home</a></p>
+    <p>Something went wrong or that page doesn’t exist. <br><a href="{% url 'console:show_logs' status='all' %}">Return Home</a></p>
   </div>
   <div class="credits">
           <!--

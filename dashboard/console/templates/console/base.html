@@ -53,13 +53,12 @@
       </div>
 
       <!--logo start-->
-      <a href="{% url 'console:index' %}" class="logo">Mesh <span class="lite">SOS</span></a>
+      <a href="{% url 'console:show_logs' status='all' %}" class="logo">Mesh <span class="lite">SOS</span></a>
       <!--logo end-->
 
       <div class="top-nav notification-row">
-        <!-- notificatoin dropdown start-->
+        <!-- option dropdown start-->
         <ul class="nav pull-right top-menu">
-          <!-- user login dropdown start-->
           <li class="dropdown">
             <a data-toggle="dropdown" class="dropdown-toggle" href="#">
                             <span class="username">Options</span>
@@ -75,9 +74,8 @@
               </li>
             </ul>
           </li>
-          <!-- user login dropdown end -->
         </ul>
-        <!-- notificatoin dropdown end-->
+        <!-- option dropdown end-->
       </div>
     </header>
     <!--header end-->
@@ -88,25 +86,25 @@
         <!-- sidebar menu start-->
         <ul class="sidebar-menu">
           <li class="">
-            <a class="" href="{% url 'console:index' %}">
+            <a class="" href="{% url 'console:show_logs' status='all' %}">
                           <i class="icon_house_alt"></i>
                           <span>All Logs</span>
                       </a>
           </li>
           <li>
-            <a class="" href="{% url 'console:new-logs' %}">
+            <a class="" href="{% url 'console:show_logs' status='new' %}">
                           <i class="icon_document_alt"></i>
                           <span>New</span>
                       </a>
           </li>
           <li>
-            <a class="" href="{% url 'console:processing-logs' %}">
+            <a class="" href="{% url 'console:show_logs' status='processing' %}">
                           <i class="icon_document_alt"></i>
                           <span>Processing</span>
                       </a>
           </li>
           <li>
-            <a class="" href="{% url 'console:resolved-logs' %}">
+            <a class="" href="{% url 'console:show_logs' status='resolved' %}">
                           <i class="icon_document_alt"></i>
                           <span>Resolved</span>
                       </a>
