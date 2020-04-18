@@ -1,12 +1,13 @@
 {% extends 'console/base.html' %}
 
 {% block content %}
+
     <!--main content start-->
     <section id="main-content">
       <section class="wrapper">
         <div class="row">
           <div class="col-lg-12">
-            <h3 class="page-header"><i class="fa fa fa-bars"></i> PROCESSING LOGS </h3>
+            <h3 class="page-header"><i class="fa fa fa-bars"></i> ALL LOGS </h3>
           </div>
         </div>
         <!-- page start-->
@@ -79,8 +80,16 @@
                     // status label
                     var td_4 = tr.insertCell(4);
                     var ele = document.createElement('span');
-                    ele.className = "label label-primary";
-                    ele.textContent = "Processing";
+                    if(data[i].fields.status === "a"){
+                        ele.className = "label label-danger";
+                        ele.textContent = "New";
+                    } else if (data[i].fields.status === "w"){
+                        ele.className = "label label-primary";
+                        ele.textContent = "Processing";
+                    } else {
+                        ele.className = "label label-success";
+                        ele.textContent = "Resolved";
+                    }
                     td_4.appendChild(ele);
 
                     // action
@@ -89,10 +98,17 @@
                     ele1.className = "btn-group";
                     var ele2 = document.createElement('a');
                     var ele3 = document.createElement('i');
-                    ele2.className = "btn btn-success";
-                    ele2.href = "/console/update_status/" + data[i].pk + "/r/";
-                    ele3.className = "icon_check_alt2";
-                    ele2.appendChild(ele3);
+                    if(data[i].fields.status === "a"){
+                        ele2.className = "btn btn-primary";
+                        ele2.href = "/console/update_status/" + data[i].pk + "/w/";
+                        ele3.className = "icon_plus_alt2";
+                        ele2.appendChild(ele3);
+                    } else if (data[i].fields.status === "w"){
+                        ele2.className = "btn btn-success";
+                        ele2.href = "/console/update_status/" + data[i].pk + "/r/";
+                        ele3.className = "icon_check_alt2";
+                        ele2.appendChild(ele3);
+                    }
                     ele1.appendChild(ele2);
                     td_5.appendChild(ele1);
                 }
@@ -107,7 +123,7 @@
                 $.ajax({
                     headers: { "X-CSRFToken": token },
                     type: "GET",
-                    url: "/console/get_logs/w/",
+                    url: "/console/get_logs/i/",
                     success: function(data) {
                         load_page(data);
                     }
