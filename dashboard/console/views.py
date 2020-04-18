@@ -7,10 +7,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import Http404
 from django.urls import reverse
+from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 import requests
 import json
-from django.core import serializers
+import googlemaps
 
 
 def get_logs(request, status):
@@ -119,8 +120,18 @@ def analytics_view(request, feature):
         location = (log.latitude, log.longitude)
         data.append(location)
 
+    gamps = googlemaps.Client(key='AIzaSyARRcMNgSrGPV5mOURKpwvjIJ3uygQs8vs')
+    geocode_result = gamps.geocode(request.user.profile.location)
+    lat = geocode_result[0]['geometry']['location']['lat']
+    lng = geocode_result[0]['geometry']['location']['lng']
+
     data_js = json.dumps(data)
-    return render(request, 'console/analytics.html', {'data': data_js, 'api_key': 'AIzaSyARRcMNgSrGPV5mOURKpwvjIJ3uygQs8vs'})
+    return render(request, 'console/analytics.html', {
+        'data': data_js,
+        'api_key': 'AIzaSyARRcMNgSrGPV5mOURKpwvjIJ3uygQs8vs',
+        'c_lat': lat,
+        'c_lng': lng
+    })
 
 
 @login_required
