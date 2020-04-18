@@ -1,0 +1,135 @@
+{% extends 'console/base.html' %}
+
+{% block content %}
+
+    <!--=======================
+    <script type="text/javascript">
+        window.setTimeout(function () {
+            location.href = "{% url 'console:index' %}";
+        }, 5000);
+    </script>
+    ===========================-->
+
+    <!--main content start-->
+    <section id="main-content">
+      <section class="wrapper">
+        <p id="output"></p>
+        <div class="row">
+          <div class="col-lg-12">
+            <h3 class="page-header"><i class="fa fa fa-bars"></i> ALL LOGS </h3>
+          </div>
+        </div>
+        <!-- page start-->
+
+        <div class="row">
+            <div class="col-lg-12">
+                <section class="panel">
+                    <table class="table table-striped table-advance table-hover" id="tbl">
+                        <tbody>
+                          <tr>
+                            <th> Log ID</th>
+                            <th><i class="icon_calendar"></i> Timestamp</th>
+                            <th><i class="icon_error-triangle_alt"></i> Emergency</th>
+                            <th><i class="icon_profile"></i> Core ID</th>
+                            <th><i class="icon_check"></i> Status</th>
+                            <th><i class="icon_cogs"></i> Action</th>
+                          </tr>
+                        </tbody>
+                    </table>
+                </section>
+                <p id="no_logs_output"></p>
+            </div>
+        </div>
+        <!-- page end-->
+      </section>
+    </section>
+
+    <!--main content end-->
+
+    <script type="text/javascript">
+        var data = {{logs_json | safe}};
+        var len = data.length
+        document.getElementById("output").innerHTML = len;
+        if(len === 0){
+            var output = document.getElementById('no_logs_output');
+            output.textContent = "No logs are available.";
+        }
+        else{
+            var table = document.getElementById('tbl').getElementsByTagName('tbody')[0];
+            for(i = 0; i < data.length; i++) {
+                var tr = table.insertRow();
+
+                var td_0 = tr.insertCell(0);
+                var ele = document.createElement('a');
+                ele.href = "/console/detail/" + data[i].pk + "/";
+                ele.textContent = data[i].pk;
+                td_0.appendChild(ele);
+
+                var td_1 = tr.insertCell(1);
+                td_1.textContent = data[i].fields.timestamp;
+
+                var td_2 = tr.insertCell(2);
+                td_2.textContent = data[i].fields.emergency_type;
+
+                var td_3 = tr.insertCell(3);
+                td_3.textContent = data[i].fields.core_id;
+
+                var td_4 = tr.insertCell(4);
+                var ele = document.createElement('span');
+                if(data[i].fields.status === "a"){
+                    ele.className = "label label-danger";
+                    ele.textContent = "New";
+                } else if (data[i].fields.status === "w"){
+                    ele.className = "label label-primary";
+                    ele.textContent = "Processing";
+                } else {
+                    ele.className = "label label-success";
+                    ele.textContent = "Resolved";
+                }
+                td_4.appendChild(ele);
+
+                var td_5 = tr.insertCell(5);
+                var ele1 = document.createElement('div');
+                ele1.className = "btn-group";
+                var ele2 = document.createElement('a');
+                var ele3 = document.createElement('i');
+                if(data[i].fields.status === "a"){
+                    ele2.className = "btn btn-primary";
+                    ele2.href = "/console/update_status/" + data[i].pk + "/w/";
+                    ele3.className = "icon_plus_alt2";
+                    ele2.appendChild(ele3);
+                } else if (data[i].fields.status === "w"){
+                    ele2.className = "btn btn-success";
+                    ele2.href = "/console/update_status/" + data[i].pk + "/r/";
+                    ele3.className = "icon_check_alt2";
+                    ele2.appendChild(ele3);
+                }
+                ele1.appendChild(ele2);
+                td_5.appendChild(ele1);
+            }
+        }
+    </script>
+
+    <script type="text/javascript">
+        var token = '{{csrf_token}}';
+
+        function trigger_data_call(){
+            $( document ).ready(function() {
+                $.ajax({
+                    headers: { "X-CSRFToken": token },
+                    type:'POST',
+                    url:'/console/sync_db/',
+                    data:{
+                        status:"a",
+                    },
+                    success:function(data){
+                        console.log(data);
+                    }
+                });
+            });
+        }
+
+        setInterval(trigger_data_call, 3000);
+    </script>
+
+{% endblock %}

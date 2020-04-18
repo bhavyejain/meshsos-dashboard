@@ -14,4 +14,7 @@ urlpatterns = [
     path('detail/<int:pk>/', views.request_detail, name='details'),
     path('update_status/<int:pk>/<str:status>/', views.update_status, name='update-status'),
     path('profile/', views.profile, name='profile'),
+    path('analytics/<str:feature>/', views.analytics_view, name='analytics'),
+    path('test/', views.index_test, name='index_test'),
+    path('sync_db/', views.sync_db, name='sync_db'),
 ]

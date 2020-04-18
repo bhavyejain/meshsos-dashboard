@@ -25,6 +25,8 @@
   <link href="{% static 'css/style.css' %}" rel="stylesheet">
   <link href="{% static 'css/style-responsive.css' %}" rel="stylesheet" />
 
+  <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
+
   <!-- HTML5 shim and Respond.js IE8 support of HTML5 -->
   <!--[if lt IE 9]>
       <script src="{% static 'js/html5shiv.js' %}"></script>
@@ -109,11 +111,17 @@
                           <span>Resolved</span>
                       </a>
           </li>
-          <li>
-            <a class="" href="{% url 'console:index' %}">       <!- to be changed ->
+          <li class="sub-menu">
+            <a href="javascript:;" class="">
                           <i class="icon_piechart"></i>
                           <span>Analytics</span>
+                          <span class="menu-arrow arrow_carrot-right"></span>
                       </a>
+            <ul class="sub">
+              <li><a class="" href="{% url 'console:analytics' feature='a' %}">Heatmap : All</a></li>
+              <li><a class="" href="{% url 'console:analytics' feature='m' %}">Heatmap : Medical</a></li>
+              <li><a class="" href="{% url 'console:analytics' feature='p' %}">Heatmap : Police</a></li>
+            </ul>
           </li>
 
         </ul>

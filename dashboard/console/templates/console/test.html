@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
+</head>
+<body>
+
+<p id="output"></p>
+
+<script type="text/javascript">
+    var token = '{{csrf_token}}';
+
+    function trigger_data_call(){
+        $( document ).ready(function() {
+            //e.preventDefault();
+            $.ajax({
+                headers: { "X-CSRFToken": token },
+                type:'POST',
+                url:'/console/dummy/',
+                data:{
+                    str:"test string",
+                },
+                success:function(data){
+                    console.log("test successful!");
+                }
+            });
+        });
+    }
+
+    setInterval(trigger_data_call, 3000);
+</script>
+
+</body>

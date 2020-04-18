@@ -1,6 +1,6 @@
 from django.db import transaction
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from .models import Log
 from .forms import UserForm, ProfileForm
 from django.contrib.auth.decorators import login_required
@@ -9,6 +9,44 @@ from django.http import Http404
 from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
 import requests
+import json
+
+from django.core import serializers
+
+
+def index_test(request):
+    try:
+        logs = Log.objects.filter(emergency_type='police')
+    except Log.DoesNotExist:
+        raise Http404("Log does not exist")
+    logs_json = serializers.serialize('json', logs)
+    context = {
+        'logs': logs,
+        'logs_json': logs_json
+    }
+    return render(request, 'console/logs_test.html', context)
+
+def sync_db(request):
+    if request.method == 'POST':
+        status = request.POST['status']
+        response = requests.get('http://8199bb70.ngrok.io/rlogs/')
+        if response.status_code == 200:
+            incoming_logs = response.json()
+            for log in incoming_logs:
+                _server_db_id = log['id']
+                _timestamp = log['timestamp']
+                _core_id = log['core_id']
+                try:
+                    Log.objects.get(server_db_id=_server_db_id)
+                except ObjectDoesNotExist:
+                    l = Log(server_db_id=_server_db_id, timestamp=_timestamp, emergency_type=log['emergency_type'],
+                            core_id=_core_id, latitude=log['latitude'], longitude=log['longitude'],
+                            accuracy=log['accuracy'], status=log['status'])
+                    l.save_log()
+            return HttpResponse("status = " + str(status))
+        else:
+            return HttpResponse("No logs found!")
+
 
 def index(request):
     response = requests.get('http://8199bb70.ngrok.io/rlogs/')
@@ -66,7 +104,7 @@ def resolved_requests(request):
     context = {'logs': logs}
     return render(request, 'console/logs-resolved.html', context)
 
-
+@login_required
 def request_detail(request, pk):
     try:
         log = Log.objects.get(pk = pk)
@@ -81,7 +119,7 @@ def request_detail(request, pk):
     except ObjectDoesNotExist:
         return render(request, 'console/404.html', {})
 
-
+@login_required
 def update_status(request, pk, status):
     log = get_object_or_404(Log, pk=pk)
 
@@ -95,6 +133,24 @@ def update_status(request, pk, status):
         return HttpResponseRedirect(reverse('console:processing-logs'))
     elif status == "r":
         return HttpResponseRedirect(reverse('console:resolved-logs'))
+
+
+@login_required
+def analytics_view(request, feature):
+    if feature == 'a':
+        logs = Log.objects.all()
+    elif feature == 'p':
+        logs = Log.objects.filter(emergency_type = 'police')
+    elif feature == 'm':
+        logs = Log.objects.filter(emergency_type='medical')
+
+    data = []
+    for log in logs:
+        location = (log.latitude, log.longitude)
+        data.append(location)
+
+    data_js = json.dumps(data)
+    return render(request, 'console/analytics.html', {'data': data_js, 'api_key': 'AIzaSyARRcMNgSrGPV5mOURKpwvjIJ3uygQs8vs'})
 
 
 @login_required
