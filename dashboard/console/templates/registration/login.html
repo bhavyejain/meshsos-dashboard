@@ -6,21 +6,26 @@
 	<title>MeshSOS | Login</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="shortcut icon" href="{% static 'img/favicon.png' %}">
 <!--===============================================================================================-->	
 <!--	<link rel="icon" type="image/png" href="images/icons/favicon.ico"/> -->					
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="{% static 'css/util.css' %}">
 	<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
 <!--===============================================================================================-->
+
 </head>
 <body>
-	
+
 	<div class="limiter">
 		<div class="container-login100">
 			<div class="wrap-login100 p-l-85 p-r-85 p-t-55 p-b-55">
-				<form class="login100-form validate-form flex-sb flex-w" method="post" action="{% url 'console:login' %}">
+				<div style="display: flex; justify-content: center; align-items: center;">
+					<img src="{% static 'img/favicon.png' %}" style="width:50%">
+				</div>
+				<form class="login100-form validate-form flex-sb flex-w" method="post" action="{% url 'console:login' %}" style="display: flex; justify-content: center; align-items: center;">
 					{% csrf_token %}
-					<span class="login100-form-title p-b-32">
+					<span class="login100-form-title p-b-32 p-t-30" style="text-align: center;">
 						Account Login
 					</span>
 
@@ -42,7 +47,7 @@
         				<p>Your username and password didn't match. Please try again!</p>
     				{% endif %}
 
-					<div class="container-login100-form-btn">
+					<div class="container-login100-form-btn" style="display: flex; justify-content: center; align-items: center;">
 						<button class="login100-form-btn" type="submit">
 							Login
 						</button>

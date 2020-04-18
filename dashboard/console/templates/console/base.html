@@ -25,6 +25,8 @@
   <link href="{% static 'css/style.css' %}" rel="stylesheet">
   <link href="{% static 'css/style-responsive.css' %}" rel="stylesheet" />
 
+  <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
+
   <!-- HTML5 shim and Respond.js IE8 support of HTML5 -->
   <!--[if lt IE 9]>
       <script src="{% static 'js/html5shiv.js' %}"></script>
@@ -51,13 +53,12 @@
       </div>
 
       <!--logo start-->
-      <a href="{% url 'console:index' %}" class="logo">Mesh <span class="lite">SOS</span></a>
+      <a href="{% url 'console:show_logs' status='all' %}" class="logo">Mesh <span class="lite">SOS</span></a>
       <!--logo end-->
 
       <div class="top-nav notification-row">
-        <!-- notificatoin dropdown start-->
+        <!-- option dropdown start-->
         <ul class="nav pull-right top-menu">
-          <!-- user login dropdown start-->
           <li class="dropdown">
             <a data-toggle="dropdown" class="dropdown-toggle" href="#">
                             <span class="username">Options</span>
@@ -73,9 +74,8 @@
               </li>
             </ul>
           </li>
-          <!-- user login dropdown end -->
         </ul>
-        <!-- notificatoin dropdown end-->
+        <!-- option dropdown end-->
       </div>
     </header>
     <!--header end-->
@@ -86,34 +86,40 @@
         <!-- sidebar menu start-->
         <ul class="sidebar-menu">
           <li class="">
-            <a class="" href="{% url 'console:index' %}">
+            <a class="" href="{% url 'console:show_logs' status='all' %}">
                           <i class="icon_house_alt"></i>
                           <span>All Logs</span>
                       </a>
           </li>
           <li>
-            <a class="" href="{% url 'console:new-logs' %}">
+            <a class="" href="{% url 'console:show_logs' status='new' %}">
                           <i class="icon_document_alt"></i>
                           <span>New</span>
                       </a>
           </li>
           <li>
-            <a class="" href="{% url 'console:processing-logs' %}">
+            <a class="" href="{% url 'console:show_logs' status='processing' %}">
                           <i class="icon_document_alt"></i>
                           <span>Processing</span>
                       </a>
           </li>
           <li>
-            <a class="" href="{% url 'console:resolved-logs' %}">
+            <a class="" href="{% url 'console:show_logs' status='resolved' %}">
                           <i class="icon_document_alt"></i>
                           <span>Resolved</span>
                       </a>
           </li>
-          <li>
-            <a class="" href="{% url 'console:index' %}">       <!- to be changed ->
+          <li class="sub-menu">
+            <a href="javascript:;" class="">
                           <i class="icon_piechart"></i>
                           <span>Analytics</span>
+                          <span class="menu-arrow arrow_carrot-right"></span>
                       </a>
+            <ul class="sub">
+              <li><a class="" href="{% url 'console:analytics' feature='a' %}">Heatmap : All</a></li>
+              <li><a class="" href="{% url 'console:analytics' feature='m' %}">Heatmap : Medical</a></li>
+              <li><a class="" href="{% url 'console:analytics' feature='p' %}">Heatmap : Police</a></li>
+            </ul>
           </li>
 
         </ul>
@@ -141,6 +147,32 @@
   </section>
   <!-- container section end -->
   <!-- javascripts -->
+
+  <script type="text/javascript">
+        // script to update database at regular intervals
+
+        var token = '{{csrf_token}}';
+
+        function trigger_data_call(){
+            $( document ).ready(function() {
+                $.ajax({
+                    headers: { "X-CSRFToken": token },
+                    type:'POST',
+                    url:'/console/sync_db/',
+                    data:{
+                        status:"a",
+                    },
+                    success:function(data){
+                        console.log(data);
+                    }
+                });
+            });
+        }
+
+        trigger_data_call();
+        setInterval(trigger_data_call, 3000);
+    </script>
+
   <script src="{% static 'js/jquery.js' %}"></script>
   <script src="{% static 'js/bootstrap.min.js' %}"></script>
   <!-- nice scroll -->
