@@ -63,6 +63,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'console.context_processors.global_settings',
             ],
         },
     },
@@ -127,3 +128,6 @@ STATICFILES_DIRS = (
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 LOGIN_REDIRECT_URL = '/console/logs/all/'
+
+with open('api_key.txt', 'r') as reader:
+    GOOGLE_API_KEY = reader.readline().strip()
