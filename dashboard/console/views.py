@@ -12,6 +12,7 @@ from django.core.exceptions import ObjectDoesNotExist
 import requests
 import json
 import googlemaps
+from .context_processors import GOOGLE_API_KEY
 
 
 def get_logs(request, status):
@@ -81,7 +82,6 @@ def request_detail(request, pk):
         return render(request, 'console/detail.html', {
             'log': log,
             'source': source,
-            'api_key': 'AIzaSyARRcMNgSrGPV5mOURKpwvjIJ3uygQs8vs'
         })
     except ObjectDoesNotExist:
         return render(request, 'console/404.html')
@@ -120,7 +120,7 @@ def analytics_view(request, feature):
         location = (log.latitude, log.longitude)
         data.append(location)
 
-    gamps = googlemaps.Client(key='AIzaSyARRcMNgSrGPV5mOURKpwvjIJ3uygQs8vs')
+    gamps = googlemaps.Client(key = GOOGLE_API_KEY)
     geocode_result = gamps.geocode(request.user.profile.location)
     lat = geocode_result[0]['geometry']['location']['lat']
     lng = geocode_result[0]['geometry']['location']['lng']
@@ -128,7 +128,6 @@ def analytics_view(request, feature):
     data_js = json.dumps(data)
     return render(request, 'console/analytics.html', {
         'data': data_js,
-        'api_key': 'AIzaSyARRcMNgSrGPV5mOURKpwvjIJ3uygQs8vs',
         'c_lat': lat,
         'c_lng': lng
     })

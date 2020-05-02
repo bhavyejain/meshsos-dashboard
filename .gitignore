@@ -113,3 +113,6 @@ media/
 
 # IDE
 .idea/
+
+# api key
+api_key.txt
