@@ -131,3 +131,4 @@ LOGIN_REDIRECT_URL = '/console/logs/all/'
 
 with open('api_key.txt', 'r') as reader:
     GOOGLE_API_KEY = reader.readline().strip()
+    MAPBOX_API_KEY = reader.readline().strip()
