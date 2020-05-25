@@ -1,0 +1,45 @@
+{% extends 'console/base.html' %}
+
+{% block content %}
+    <!--main content start-->
+<section id="main-content" xmlns:margin-top="http://www.w3.org/1999/xhtml">
+        <section class="wrapper">
+
+            <div class="row" style="margin: 10px;">
+            <form id="date_filter" method="POST" class="post-form">
+                {% csrf_token %}
+                <div class="col-sm-3">
+                    <table>
+                    {{ form.as_table }}
+                    </table>
+                </div>
+                <button type="submit" class="save btn btn-success"> <b>Update</b> </button>
+            </form>
+            </div>
+
+            <div id="deck-container" style="height: 570px; margin: 20;"></div>
+
+            <script type="text/javascript">
+                const my_data = {{data}};
+
+                const jsonInput = {"initialViewState": {"bearing": 0, "latitude": {{c_lat}}, "longitude": {{c_lng}}, "maxZoom": 16, "minZoom": 5, "pitch": 70, "zoom": 13},
+                                      "layers": [{"@@type": "HexagonLayer", "autoHighlight": true, "coverage": 1, "data": my_data, "radius": 100, "elevationRange": [0, 200], "elevationScale": 5, "extruded": true, "opacity": 0.3, "getPosition": "@@=-", "id": "8e1a85a7-ba5e-4e34-9861-4bd4ab04d023", "pickable": true}],
+                                      "mapStyle": "mapbox://styles/mapbox/light-v9",
+                                      "views": [{"@@type": "MapView", "controller": true}]
+                                   };
+                const tooltip = {'text': 'Cases: {elevationValue}'};
+                const customLibraries = null;
+
+                const deck = createDeck({
+                  mapboxApiKey: '{{MAPBOX_API_KEY}}',
+                  container: document.getElementById('deck-container'),
+                  jsonInput,
+                  tooltip,
+                  customLibraries
+                });
+            </script>
+
+        </section>
+    </section>
+    <!--main content end-->
+{% endblock %}

@@ -2,7 +2,7 @@ from django.db import transaction
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
 from .models import Log
-from .forms import UserForm, ProfileForm
+from .forms import UserForm, ProfileForm, AnalyticsForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import Http404
@@ -12,8 +12,8 @@ from django.core.exceptions import ObjectDoesNotExist
 import requests
 import json
 import googlemaps
-from .context_processors import GOOGLE_API_KEY
-
+from .context_processors import GOOGLE_API_KEY, MAPBOX_API_KEY
+import datetime
 
 def get_logs(request, status):
     # status filter:
@@ -107,33 +107,6 @@ def update_status(request, pk, status):
 
 
 @login_required
-def analytics_view(request, feature):
-    if feature == 'a':
-        logs = Log.objects.all()
-    elif feature == 'p':
-        logs = Log.objects.filter(emergency_type = 'police')
-    elif feature == 'm':
-        logs = Log.objects.filter(emergency_type='medical')
-
-    data = []
-    for log in logs:
-        location = (log.latitude, log.longitude)
-        data.append(location)
-
-    gamps = googlemaps.Client(key = GOOGLE_API_KEY)
-    geocode_result = gamps.geocode(request.user.profile.location)
-    lat = geocode_result[0]['geometry']['location']['lat']
-    lng = geocode_result[0]['geometry']['location']['lng']
-
-    data_js = json.dumps(data)
-    return render(request, 'console/analytics.html', {
-        'data': data_js,
-        'c_lat': lat,
-        'c_lng': lng
-    })
-
-
-@login_required
 @transaction.atomic
 def profile(request):
     if request.method == 'POST':
@@ -152,4 +125,47 @@ def profile(request):
     return render(request, 'console/profile.html', {
         'user_form': user_form,
         'profile_form': profile_form
+    })
+
+
+@login_required
+def analytics_view(request, feature):
+    if request.method == "POST":
+        form = AnalyticsForm(request.POST)      # get current form
+        min_date = datetime.datetime(int(form.data["startDate_year"]), int(form.data["startDate_month"]), int(form.data["startDate_day"]))   # get minimum date value
+        max_date = datetime.datetime(int(form.data["endDate_year"]), int(form.data["endDate_month"]), int(form.data["endDate_day"]), 23, 59, 59)    # get maximum date value and set to last second of the day
+    else:
+        form = AnalyticsForm()
+        min_date = datetime.datetime(2020, 1, 1)        # default minimum date value
+        max_date = datetime.datetime.now()              # default maximum date value
+
+    if feature == 'a':
+        logs = Log.objects.all()
+    elif feature == 'p':
+        logs = Log.objects.filter(emergency_type = 'police')
+    elif feature == 'm':
+        logs = Log.objects.filter(emergency_type='medical')
+
+    date_format = "%Y-%m-%d %H:%M:%S"       # provide a datetime format of char field timestamp of log
+    data = []       # final data format: [[73.23, 23.56], [..., ...], ..., [lng, lat]]
+    for log in logs:
+        ts = log.timestamp      # get timestamp of log
+        dt = datetime.datetime.strptime(ts, date_format)        # convert timestamp (char field) to datetime object
+        if min_date < dt < max_date:
+            position = [log.longitude, log.latitude]
+            data.append(position)
+
+    gmaps = googlemaps.Client(key = GOOGLE_API_KEY)
+    geocode_result = gmaps.geocode(request.user.profile.location)       # geocode user's location
+    lat = geocode_result[0]['geometry']['location']['lat']
+    lng = geocode_result[0]['geometry']['location']['lng']
+
+    data_js = json.dumps(data)      # JSON-ify data
+
+    return render(request, 'console/analytics.html', {
+        'data': data_js,
+        'c_lat': lat,
+        'c_lng': lng,
+        'form': form,
+        'MAPBOX_API_KEY': MAPBOX_API_KEY,
     })
