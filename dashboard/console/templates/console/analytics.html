@@ -2,64 +2,44 @@
 
 {% block content %}
     <!--main content start-->
-    <section id="main-content">
+<section id="main-content" xmlns:margin-top="http://www.w3.org/1999/xhtml">
         <section class="wrapper">
-            <script type="text/javascript">
-                var data = {{data}};
-                var loc;
-                for(loc of data){
 
-                }
-            </script>
-            <div id="floating-panel">
-                <button onclick="toggleHeatmap()">Toggle Heatmap</button>
-                <button onclick="changeRadius()">Change radius</button>
+            <div class="row" style="margin: 10px;">
+            <form id="date_filter" method="POST" class="post-form">
+                {% csrf_token %}
+                <div class="col-sm-3">
+                    <table>
+                    {{ form.as_table }}
+                    </table>
+                </div>
+                <button type="submit" class="save btn btn-success"> <b>Update</b> </button>
+            </form>
             </div>
 
-            <div id="map" style="height: 650px;"> </div>
+            <div id="deck-container" style="height: 570px; margin: 20;"></div>
 
-            <script>
+            <script type="text/javascript">
+                const my_data = {{data}};
 
-              var map, heatmap;
+                const jsonInput = {"initialViewState": {"bearing": 0, "latitude": {{c_lat}}, "longitude": {{c_lng}}, "maxZoom": 16, "minZoom": 5, "pitch": 70, "zoom": 13},
+                                      "layers": [{"@@type": "HexagonLayer", "autoHighlight": true, "coverage": 1, "data": my_data, "radius": 100, "elevationRange": [0, 200], "elevationScale": 5, "extruded": true, "opacity": 0.3, "getPosition": "@@=-", "id": "8e1a85a7-ba5e-4e34-9861-4bd4ab04d023", "pickable": true}],
+                                      "mapStyle": "mapbox://styles/mapbox/light-v9",
+                                      "views": [{"@@type": "MapView", "controller": true}]
+                                   };
+                const tooltip = {'text': 'Cases: {elevationValue}'};
+                const customLibraries = null;
 
-              function initMap() {
-                map = new google.maps.Map(document.getElementById('map'), {
-                  zoom: 14,
-                  center: { lat: {{c_lat}}, lng: {{c_lng}} },
-                  mapTypeId: 'hybrid'
+                const deck = createDeck({
+                  mapboxApiKey: '{{MAPBOX_API_KEY}}',
+                  container: document.getElementById('deck-container'),
+                  jsonInput,
+                  tooltip,
+                  customLibraries
                 });
-
-                heatmap = new google.maps.visualization.HeatmapLayer({
-                  data: getPoints(),
-                  map: map
-                });
-              }
-
-              function toggleHeatmap() {
-                heatmap.setMap(heatmap.getMap() ? null : map);
-              }
-
-              function changeRadius() {
-                heatmap.set('radius', heatmap.get('radius') ? null : 20);
-              }
-
-              function getPoints() {
-                var data = {{data}};
-                var loc;
-                var data_points = []
-                for(loc of data){
-                    data_points.push(new google.maps.LatLng(loc[0], loc[1]));
-                }
-                document.getElementById("output").innerHTML = data_points.length
-                return data_points;
-              }
             </script>
 
-            <script async defer
-                src="https://maps.googleapis.com/maps/api/js?key={{GOOGLE_API_KEY}}&libraries=visualization&callback=initMap">
-            </script>
         </section>
-        <p id="output"></p>
     </section>
     <!--main content end-->
 {% endblock %}

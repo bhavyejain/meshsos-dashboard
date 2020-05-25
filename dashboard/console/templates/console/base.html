@@ -26,6 +26,8 @@
   <link href="{% static 'css/style-responsive.css' %}" rel="stylesheet" />
 
   <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
+  <script src=https://cdn.jsdelivr.net/npm/@deck.gl/jupyter-widget@~8.1.*/dist/index.js></script>
+  <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.0/mapbox-gl.css" rel="stylesheet" />
 
   <!-- HTML5 shim and Respond.js IE8 support of HTML5 -->
   <!--[if lt IE 9]>
@@ -116,9 +118,9 @@
                           <span class="menu-arrow arrow_carrot-right"></span>
                       </a>
             <ul class="sub">
-              <li><a class="" href="{% url 'console:analytics' feature='a' %}">Heatmap : All</a></li>
-              <li><a class="" href="{% url 'console:analytics' feature='m' %}">Heatmap : Medical</a></li>
-              <li><a class="" href="{% url 'console:analytics' feature='p' %}">Heatmap : Police</a></li>
+              <li><a class="" href="{% url 'console:analytics' feature='a' %}">All Cases</a></li>
+              <li><a class="" href="{% url 'console:analytics' feature='m' %}">Medical Cases</a></li>
+              <li><a class="" href="{% url 'console:analytics' feature='p' %}">Police Cases</a></li>
             </ul>
           </li>
 
